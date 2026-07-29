@@ -4,9 +4,11 @@ TOPO AI 是一个面向游戏美术、3D 资产审核与外包验收场景的模
 
 ## 在线体验
 
-**产品地址：** https://topo-ai-review.rchwehfyjt2.chatgpt.site
+**Vercel 公网地址：** https://topo-ai-review.vercel.app
 
-网站已设置为公开访问，获得链接的用户无需登录即可体验。
+**备用体验地址：** https://topo-ai-review.rchwehfyjt2.chatgpt.site
+
+Vercel 版本已设置为公开访问，获得链接的用户无需登录即可体验。
 
 ## 产品思考
 
