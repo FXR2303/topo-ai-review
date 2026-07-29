@@ -8,7 +8,9 @@
   "scripts": {
     "install:ci": "bash scripts/install-ci.sh",
     "dev": "WRANGLER_LOG_PATH=.wrangler/wrangler.log vite",
+    "dev:vercel": "vite --config vite.vercel.config.ts",
     "build": "bash scripts/build-verified.sh",
+    "build:vercel": "vite build --config vite.vercel.config.ts",
     "start": "WRANGLER_LOG_PATH=.wrangler/wrangler.log vinext start",
     "test": "npm run build && node --test tests/rendered-html.test.mjs",
     "validate:artifact": "bash scripts/validate-artifact.sh",

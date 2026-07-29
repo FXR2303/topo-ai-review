@@ -239,6 +239,8 @@ const data: Evaluation[] = seedTuples.map((r) => ({
   status: "complete",
   notes: {},
 }));
+const LOCAL_EVALUATIONS_KEY = "topo-ai-evaluations-v1";
+const LOCAL_PK_KEY = "topo-ai-pk-results-v1";
 const issueOptions = [
   "局部面数不均",
   "长细面",
@@ -1424,22 +1426,33 @@ function PK({
     }
   };
   const save = async () => {
+    const result = {
+      modelAId: fileA ? `upload:${fileA.name}` : A.id,
+      modelBId: fileB ? `upload:${fileB.name}` : B.id,
+      winner,
+      notes,
+      createdAt: new Date().toISOString(),
+    };
     try {
       const res = await fetch("/api/pk", {
         method: "POST",
         headers: { "content-type": "application/json" },
-        body: JSON.stringify({
-          modelAId: fileA ? `upload:${fileA.name}` : A.id,
-          modelBId: fileB ? `upload:${fileB.name}` : B.id,
-          winner,
-          notes,
-        }),
+        body: JSON.stringify(result),
       });
       if (!res.ok) throw 0;
       toast("PK 结果已保存");
     } catch {
       toast("PK 结果已保存到当前会话");
     }
+    try {
+      const current = JSON.parse(
+        localStorage.getItem(LOCAL_PK_KEY) || "[]",
+      ) as unknown[];
+      localStorage.setItem(
+        LOCAL_PK_KEY,
+        JSON.stringify([result, ...current].slice(0, 50)),
+      );
+    } catch {}
   };
   return (
     <>
@@ -2020,6 +2033,16 @@ export default function Home() {
     };
     hash();
     addEventListener("hashchange", hash);
+    try {
+      const local = JSON.parse(
+        localStorage.getItem(LOCAL_EVALUATIONS_KEY) || "[]",
+      ) as Evaluation[];
+      if (local.length) {
+        setRecords(local);
+        setA(local[0].id);
+        setB(local[1]?.id || local[0].id);
+      }
+    } catch {}
     fetch("/api/evaluations")
       .then((r) => {
         if (!r.ok) throw 0;
@@ -2035,6 +2058,11 @@ export default function Home() {
       .catch(() => {});
     return () => removeEventListener("hashchange", hash);
   }, []);
+  useEffect(() => {
+    try {
+      localStorage.setItem(LOCAL_EVALUATIONS_KEY, JSON.stringify(records));
+    } catch {}
+  }, [records]);
   const saved = (r: Evaluation) =>
     setRecords((cur) => [r, ...cur.filter((x) => x.id !== r.id)]);
   return (
